@@ -158,6 +158,10 @@ app.use(helmet({
 app.use(limiter);
 
 // CORS configuration - more restrictive
+const corsOriginsFromEnv = process.env.CORS_ORIGIN
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : [];
+
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:5174',
@@ -170,8 +174,10 @@ const allowedOrigins = [
   'capacitor://localhost', // Capacitor iOS
   'http://localhost', // Capacitor Android
   'ionic://localhost', // Ionic dev server
-  process.env.CORS_ORIGIN
+  ...corsOriginsFromEnv
 ].filter(Boolean);
+
+console.log('🔗 CORS Origins:', allowedOrigins.filter(o => !o.includes('localhost')).join(', '));
 
 app.use(cors({
   origin: function (origin, callback) {
